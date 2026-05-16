@@ -1,7 +1,4 @@
-const log4js = require('../utils/log4js')
 const Sequelize = require('sequelize')
-
-console.log('>>> Sequelize 已加载，尝试连接...')
 
 const sequelize = new Sequelize('dev5', 'root', '123456', {
   host: 'localhost',
@@ -16,10 +13,10 @@ const sequelize = new Sequelize('dev5', 'root', '123456', {
 
 sequelize.authenticate()
   .then(() => {
-    log4js.info('【数据库连接成功】')
+    console.log('【数据库连接成功】')
   })
   .catch((err) => {
-    log4js.error('【数据库连接失败】:', err.message)
+    console.error('【数据库连接失败】:', err.message)
   })
 
 sequelize.sync()

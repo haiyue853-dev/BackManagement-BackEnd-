@@ -5,15 +5,35 @@ const json = require('koa-json')
 const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
+//引入中间件
+const errorHandler = require('./middleware/errorHandler')
+const response = require('./middleware/response')
+const cors = require('./middleware/cors')
 
 const index = require('./routes/index')
 const users = require('./routes/users')
+require('./config/db')
 
-// var log4js = require("log4js")
-// var logger4 = require("./utils/log4js")
-// logger4.info("Some  info")
-// // error handler
-// onerror(app)
+app.use(errorHandler)
+app.use(cors)
+app.use(response)
+app.use(bodyparser({
+  enableTypes: ['json', 'form', 'text']
+}))
+app.use(logger())
+app.use(require('koa-static')(__dirname + '/public'))
+app.use(views(__dirname + '/views', {
+  extension: 'pug'
+}))
+app.use(index.routes(), index.allowedMethods())
+app.use(users.routes(), users.allowedMethods())
+// 错误监听
+app.on('error', (err, ctx) => {
+  console.error('server error', err)
+})
+
+module.exports = app
+
 
 // middlewares
 app.use(bodyparser({
