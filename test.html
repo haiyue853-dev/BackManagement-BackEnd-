@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CORS Test</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 720px;
+      margin: 40px auto;
+      line-height: 1.6;
+    }
+
+    button {
+      margin-right: 12px;
+      margin-bottom: 12px;
+      padding: 10px 16px;
+      cursor: pointer;
+    }
+
+    pre {
+      background: #f5f5f5;
+      padding: 16px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>CORS 测试页</h1>
+  <p>前端地址建议是 <code>http://localhost:5500</code></p>
+  <p>后端地址默认是 <code>http://localhost:3000</code></p>
+
+  <button id="getBtn">测试 GET /users</button>
+  <button id="postBtn">测试 POST 预检</button>
+
+  <pre id="result">等待测试...</pre>
+
+  <script>
+    const result = document.getElementById('result');
+    const API_BASE = 'http://localhost:3000';
+
+    function show(data) {
+      result.textContent =
+        typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+    }
+
+    document.getElementById('getBtn').onclick = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/users`);
+        const text = await res.text();
+
+        show({
+          type: 'GET /users',
+          ok: res.ok,
+          status: res.status,
+          allowOrigin: res.headers.get('access-control-allow-origin'),
+          body: text
+        });
+      } catch (err) {
+        show('GET 请求失败: ' + err.message);
+      }
+    };
+
+    document.getElementById('postBtn').onclick = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/users`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name: 'test',
+            age: 18
+          })
+        });
+
+        const text = await res.text();
+
+        show({
+          type: 'POST /users',
+          ok: res.ok,
+          status: res.status,
+          allowOrigin: res.headers.get('access-control-allow-origin'),
+          body: text
+        });
+      } catch (err) {
+        show('POST 请求失败: ' + err.message);
+      }
+    };
+  </script>
+</body>
+
+</html>
