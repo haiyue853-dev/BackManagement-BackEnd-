@@ -1,15 +1,24 @@
-const { User } = require('../models')
+const userService = require('../services/user')
 
 class UserController {
   async list(ctx) {
-    const users = await User.findAll()
-    ctx.success(users)
+    const { name = '', page = 1, pageSize = 10 } = ctx.query
 
+    const result = await userService.list({
+      name,
+      page,
+      pageSize
+    })
+
+    ctx.success({
+      list: result.rows,
+      count: result.count
+    })
   }
 
   async getById(ctx) {
     const { id } = ctx.params
-    const user = await User.findByPk(id)
+    const user = await userService.getById(id)
     if (!user) {
       ctx.error('用户不存在')
       return
@@ -18,7 +27,7 @@ class UserController {
   }
 
   async create(ctx) {
-    const { name, age } = ctx.request.body
+    const { name, age, sex, birth, addr } = ctx.request.body
     if (!name) {
       ctx.error('name不能为空', 400)
       return
@@ -34,9 +43,12 @@ class UserController {
       return
     }
 
-    const user = await User.create({
+    const user = await userService.create({
       name,
-      age: Number(age)
+      age: Number(age),
+      sex,
+      birth,
+      addr
     })
 
     ctx.success(user, '创建成功')
@@ -44,9 +56,9 @@ class UserController {
   }
   async update(ctx) {
     const { id } = ctx.params
-    const { name, age } = ctx.request.body
+    const { name, age, sex, birth, addr } = ctx.request.body
 
-    const user = await User.findByPk(id)
+    const user = await userService.getById(id)
 
     if (!user) {
       ctx.error('用户不存在', 404)
@@ -68,9 +80,12 @@ class UserController {
       return
     }
 
-    await user.update({
+    await userService.update(user, {
       name,
-      age: Number(age)
+      age: Number(age),
+      sex,
+      birth,
+      addr
     })
 
     ctx.success(user, '更新成功')
@@ -79,14 +94,14 @@ class UserController {
   async remove(ctx) {
     const { id } = ctx.params
 
-    const user = await User.findByPk(id)
+    const user = await userService.getById(id)
 
     if (!user) {
       ctx.error('用户不存在', 404)
       return
     }
 
-    await user.destroy()
+    await userService.remove(user)
 
     ctx.success(null, '删除成功')
   }
