@@ -1,0 +1,15 @@
+const sequelize = require('../config/db')
+const User = require('./user')
+
+sequelize.sync()
+  .then(() => {
+    console.log('数据表同步成功')
+  })
+  .catch((err) => {
+    console.error('数据表同步失败', err.message)
+  })
+
+module.exports = {
+  sequelize,
+  User
+}

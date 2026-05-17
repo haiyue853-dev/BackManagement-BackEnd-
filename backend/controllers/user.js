@@ -1,20 +1,27 @@
+const { User } = require('../models')
+
 class UserController {
   async list(ctx) {
-    const users = [
-      { id: 1, name: '张三', age: 20 },
-      { id: 2, name: '李四', age: 25 }
-    ]
+    const users = await User.findAll()
     ctx.success(users)
+
   }
 
   async getById(ctx) {
     const { id } = ctx.params
-    ctx.success({ id, name: '用户', age: 18 })
+    const user = await User.findByPk(id)
+    if (!user) {
+      ctx.error('用户不存在')
+      return
+    }
+    ctx.success(user)
   }
 
   async create(ctx) {
     const { name, age } = ctx.request.body
-    ctx.success({ id: Date.now(), name, age }, '创建成功')
+    const user = await User.create({ name, age })
+    ctx.success(user, '创建成功')
+
   }
 }
 

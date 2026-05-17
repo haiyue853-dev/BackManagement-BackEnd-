@@ -13,7 +13,7 @@ const cors = require('./middleware/cors')
 const index = require('./routes/index')
 const users = require('./routes/users')
 
-require('./config/db')
+require('./models')
 
 app.use(errorHandler)
 app.use(cors)

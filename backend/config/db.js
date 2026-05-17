@@ -19,6 +19,6 @@ sequelize.authenticate()
     console.error('【数据库连接失败】:', err.message)
   })
 
-sequelize.sync()
+
 
 module.exports = sequelize
