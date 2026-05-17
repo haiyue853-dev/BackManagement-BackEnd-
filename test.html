@@ -37,6 +37,9 @@
 
   <button id="getBtn">测试 GET /users</button>
   <button id="postBtn">测试 POST 预检</button>
+  <button id="getByIdBtn">测试 GET /users/1</button>
+  <button id="putBtn">测试 PUT /users/1</button>
+  <button id="deleteBtn">测试 DELETE /users/1</button>
 
   <pre id="result">等待测试...</pre>
 
@@ -51,8 +54,8 @@
 
     document.getElementById('getBtn').onclick = async () => {
       try {
-        const res = await fetch(`${API_BASE}/users`);
-        const text = await res.text();
+        const res = await fetch(`${API_BASE}/users`)
+        const text = await res.text()
 
         show({
           type: 'GET /users',
@@ -62,9 +65,9 @@
           body: text
         });
       } catch (err) {
-        show('GET 请求失败: ' + err.message);
+        show('GET 请求失败: ' + err.message)
       }
-    };
+    }
 
     document.getElementById('postBtn').onclick = async () => {
       try {
@@ -74,12 +77,12 @@
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            name: 'test',
-            age: 18
+            name: '你好',
+            age: ''
           })
-        });
+        })
 
-        const text = await res.text();
+        const text = await res.text()
 
         show({
           type: 'POST /users',
@@ -91,7 +94,66 @@
       } catch (err) {
         show('POST 请求失败: ' + err.message);
       }
-    };
+    }
+    document.getElementById('getByIdBtn').onclick = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/users/1`);
+        const text = await res.text()
+
+        show({
+          type: 'GET /users/1',
+          ok: res.ok,
+          status: res.status,
+          allowOrigin: res.headers.get('access-control-allow-origin'),
+          body: text
+        })
+      } catch (err) {
+        show('GET /users/1 请求失败: ' + err.message)
+      }
+    }
+    document.getElementById('putBtn').onclick = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/users/1`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name: 'updated user',
+            age: 22
+          })
+        })
+
+        const data = await res.json()
+
+        show({
+          type: 'PUT /users/1',
+          ok: res.ok,
+          status: res.status,
+          body: data
+        })
+      } catch (err) {
+        show('PUT /users/1 请求失败: ' + err.message)
+      }
+    }
+    document.getElementById('deleteBtn').onclick = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/users/1`, {
+          method: 'DELETE'
+        })
+
+        const data = await res.json()
+
+        show({
+          type: 'DELETE /users/1',
+          ok: res.ok,
+          status: res.status,
+          body: data
+        })
+      } catch (err) {
+        show('DELETE /users/1 请求失败: ' + err.message)
+      }
+    }
   </script>
 </body>
 

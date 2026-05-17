@@ -8,6 +8,7 @@ module.exports = async (ctx, next) => {
   }
 
   ctx.error = (message = 'error', code = 500) => {
+    ctx.status = code
     ctx.body = {
       code,
       message,
