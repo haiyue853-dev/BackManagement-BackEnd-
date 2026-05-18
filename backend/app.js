@@ -13,6 +13,8 @@ const cors = require('./middleware/cors')
 const index = require('./routes/index')
 const users = require('./routes/users')
 const malls = require('./routes/malls')
+const profile = require('./routes/profile')
+const permission = require('./routes/permission')
 
 require('./models')
 
@@ -32,6 +34,8 @@ app.use(views(__dirname + '/views', {
 app.use(index.routes(), index.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
 app.use(malls.routes(), malls.allowedMethods())
+app.use(profile.routes(), profile.allowedMethods())
+app.use(permission.routes(), permission.allowedMethods())
 
 app.on('error', (err, ctx) => {
   console.error('server error', err)
