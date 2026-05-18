@@ -3,15 +3,16 @@ const { Op } = require('sequelize')
 
 class UserService {
   async list(params = {}) {
-    const { name = '', page = 1, pageSize = 10 } = params
+    const { keyword = '', page = 1, pageSize = 10 } = params
 
     const where = {}
 
-    if (name) {
+    if (keyword) {
       where.name = {
-        [Op.like]: `%${name}%`
+        [Op.like]: `%${keyword}%`
       }
     }
+
     const limit = Number(pageSize)
     const offset = (Number(page) - 1) * limit
 

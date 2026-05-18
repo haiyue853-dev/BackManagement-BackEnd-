@@ -57,12 +57,12 @@ class AccountService {
   async list(params = {}) {
     await this.ensureDefaultAccounts()
 
-    const { username = '', page = 1, pageSize = 10 } = params
+    const { keyword = '', page = 1, pageSize = 10 } = params
     const where = {}
 
-    if (username) {
+    if (keyword) {
       where.username = {
-        [Op.like]: `%${username}%`
+        [Op.like]: `%${keyword}%`
       }
     }
 
@@ -132,7 +132,7 @@ class AccountService {
       return {
         success: false,
         code: 403,
-        message: 'Account is disabled'
+        message: '账号已被禁用'
       }
     }
 

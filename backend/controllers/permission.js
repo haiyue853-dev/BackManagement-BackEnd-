@@ -21,7 +21,7 @@ class PermissionController {
       username: result.data.userInfo.username
     })
 
-    ctx.success(result.data, 'login success')
+    ctx.success(result.data, '登录成功')
   }
 
   async logout(ctx) {
@@ -33,7 +33,7 @@ class PermissionController {
       username: ctx.state.user?.username || ''
     })
 
-    ctx.success(null, 'logout success')
+    ctx.success(null, '退出成功')
   }
 }
 

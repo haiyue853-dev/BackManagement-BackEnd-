@@ -3,20 +3,20 @@ const { Op } = require('sequelize')
 
 class MallService {
   async list(params = {}) {
-    const { name = '', page = 1, pageSize = 10 } = params
+    const { keyword = '', page = 1, pageSize = 10 } = params
 
     const where = {}
 
-    if (name) {
+    if (keyword) {
       where[Op.or] = [
         {
           name: {
-            [Op.like]: `%${name}%`
+            [Op.like]: `%${keyword}%`
           }
         },
         {
           category: {
-            [Op.like]: `%${name}%`
+            [Op.like]: `%${keyword}%`
           }
         }
       ]

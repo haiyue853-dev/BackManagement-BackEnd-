@@ -1,12 +1,14 @@
-# Backend
+# 后端项目说明
 
-## Setup
-1. Copy `.env.example` to `.env`
-2. Install dependencies with `npm install`
-3. Make sure MySQL is running and the configured database exists
-4. Start the backend with `npm run dev`
+## 1. 环境准备
 
-## Environment Variables
+1. 将 `.env.example` 复制为 `.env`
+2. 执行 `npm install`
+3. 确保本地 MySQL 已启动，并创建好对应数据库
+4. 执行 `npm run dev` 启动后端服务
+
+## 2. 主要环境变量
+
 - `PORT`
 - `JWT_SECRET`
 - `JWT_EXPIRES_IN`
@@ -17,14 +19,33 @@
 - `DB_PASSWORD`
 - `LOG_LEVEL`
 
-## Test
-Run:
+## 3. 运行测试
 
 ```bash
-node --test backend/tests/env.test.js backend/tests/account.test.js backend/tests/permission.test.js backend/tests/home.test.js
+npm test
 ```
 
-## Auth
-- Login returns a JWT token
-- Protected APIs expect `Authorization: Bearer <token>`
-- Token expiration is controlled by `JWT_EXPIRES_IN`
+## 4. 鉴权说明
+
+- 登录成功后，后端会返回 JWT
+- 受保护接口需要在请求头中携带：
+
+```http
+Authorization: Bearer <token>
+```
+
+- Token 过期时间由 `JWT_EXPIRES_IN` 控制
+
+## 5. 接口文档
+
+详细接口说明见：
+
+- `backend/docs/API接口说明.md`
+
+## 6. 当前能力
+
+- JWT 鉴权
+- bcrypt 密码加密
+- 用户、商品、账号模块 CRUD
+- 统一分页参数与列表响应
+- 基础审计日志与错误响应

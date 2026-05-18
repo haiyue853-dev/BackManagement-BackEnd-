@@ -56,7 +56,7 @@ function validateMallPayload(payload = {}) {
   }
 
   if (!['上架', '下架'].includes(normalized.status)) {
-    return { valid: false, code: 400, message: '商品状态不合法' }
+    return { valid: false, code: 400, message: '商品状态只能是上架或下架' }
   }
 
   normalized.price = Number(normalized.price)

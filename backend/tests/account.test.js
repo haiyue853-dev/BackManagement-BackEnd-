@@ -89,15 +89,16 @@ test('editor should not be allowed to access account list', async () => {
 
   assert.equal(response.status, 403)
   assert.equal(response.body.code, 403)
+  assert.equal(response.body.message, '仅管理员可访问')
   assert.ok(response.body.requestId)
 })
 
-test('admin should list accounts without exposing passwordHash', async () => {
+test('admin should list accounts with unified pagination fields', async () => {
   const token = await login('admin', 'admin')
 
   const response = await request(
     'GET',
-    '/accounts?page=1&pageSize=10&username=',
+    '/accounts?page=1&pageSize=10&keyword=admin',
     null,
     { Authorization: `Bearer ${token}` }
   )
@@ -106,8 +107,10 @@ test('admin should list accounts without exposing passwordHash', async () => {
   assert.equal(response.body.code, 200)
   assert.ok(response.body.requestId)
   assert.ok(Array.isArray(response.body.data.list))
-  assert.ok(response.body.data.list.length >= 3)
+  assert.equal(response.body.data.page, 1)
+  assert.equal(response.body.data.pageSize, 10)
   assert.equal(response.body.data.list.some((item) => 'passwordHash' in item), false)
+  assert.equal(response.body.data.list.some((item) => item.username === 'admin'), true)
 })
 
 test('admin should create account and store password with bcrypt hash', async () => {
@@ -162,7 +165,7 @@ test('admin should disable account and disabled account should not be able to lo
 
   const listResponse = await request(
     'GET',
-    '/accounts?page=1&pageSize=20&username=testeditor',
+    '/accounts?page=1&pageSize=20&keyword=testeditor',
     null,
     { Authorization: `Bearer ${token}` }
   )
@@ -190,6 +193,7 @@ test('admin should disable account and disabled account should not be able to lo
 
   assert.equal(loginResponse.status, 403)
   assert.equal(loginResponse.body.code, 403)
+  assert.equal(loginResponse.body.message, '账号已被禁用')
 })
 
 test('admin should reset account password and delete account', async () => {
@@ -197,7 +201,7 @@ test('admin should reset account password and delete account', async () => {
 
   const listResponse = await request(
     'GET',
-    '/accounts?page=1&pageSize=20&username=testeditor',
+    '/accounts?page=1&pageSize=20&keyword=testeditor',
     null,
     { Authorization: `Bearer ${token}` }
   )
@@ -253,7 +257,7 @@ test('default admin account should not be disabled or downgraded', async () => {
 
   const listResponse = await request(
     'GET',
-    '/accounts?page=1&pageSize=20&username=admin',
+    '/accounts?page=1&pageSize=20&keyword=admin',
     null,
     { Authorization: `Bearer ${token}` }
   )
@@ -272,4 +276,5 @@ test('default admin account should not be disabled or downgraded', async () => {
 
   assert.equal(updateResponse.status, 400)
   assert.equal(updateResponse.body.code, 400)
+  assert.equal(updateResponse.body.message, '默认管理员账号不能被禁用或降级')
 })

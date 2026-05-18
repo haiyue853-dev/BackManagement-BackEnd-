@@ -24,7 +24,7 @@ module.exports = async (ctx, next) => {
   const session = authService.verifyToken(token)
 
   if (!session) {
-    ctx.error('Unauthorized', 401)
+    ctx.error('未登录或登录已过期', 401)
     return
   }
 

@@ -17,6 +17,12 @@ log4js.configure({
       type: 'file',
       filename: 'logs/all-logs.log',
     },
+    audit: {
+      type: 'dateFile',
+      filename: 'logs/audit',
+      pattern: 'yyyy-MM-dd.log',
+      alwaysIncludePattern: true,
+    },
     error: {
       type: 'dateFile',
       filename: 'logs/log',
@@ -27,6 +33,7 @@ log4js.configure({
   categories: {
     default: { appenders: ['console'], level: env.logLevel },
     info: { appenders: ['info', 'console'], level: 'info' },
+    audit: { appenders: ['audit', 'console'], level: 'info' },
     error: { appenders: ['console', 'error'], level: 'error' },
     warn: { appenders: ['console', 'error'], level: 'warn' },
   },
@@ -40,6 +47,12 @@ exports.debug = (content) => {
 
 exports.info = (content) => {
   const logger = log4js.getLogger('info')
+  logger.level = levels.info
+  logger.info(content)
+}
+
+exports.audit = (content) => {
+  const logger = log4js.getLogger('audit')
   logger.level = levels.info
   logger.info(content)
 }
