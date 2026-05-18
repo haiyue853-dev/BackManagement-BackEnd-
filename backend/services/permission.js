@@ -1,5 +1,5 @@
-const crypto = require('crypto')
 const profileService = require('./profile')
+const authService = require('./auth')
 
 const adminMenuList = [
   {
@@ -88,7 +88,7 @@ class PermissionService {
         success: true,
         data: {
           menuList: adminMenuList,
-          token: crypto.randomUUID(),
+          token: authService.issueToken({ username: 'admin' }),
           userInfo: {
             username: 'admin',
             role: profile.role,
@@ -106,7 +106,7 @@ class PermissionService {
         success: true,
         data: {
           menuList: editorMenuList,
-          token: crypto.randomUUID(),
+          token: authService.issueToken({ username: 'xiaoxiao' }),
           userInfo: {
             username: 'xiaoxiao',
             role: '运营专员',
@@ -124,6 +124,10 @@ class PermissionService {
       code: 401,
       message: '用户名或密码错误'
     }
+  }
+
+  async logout(token) {
+    authService.revokeToken(token)
   }
 }
 

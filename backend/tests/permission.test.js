@@ -5,7 +5,7 @@ const app = require('../app')
 
 let server
 
-function request(method, path, body) {
+function request(method, path, body, headers = {}) {
   return new Promise((resolve, reject) => {
     const payload = body ? JSON.stringify(body) : null
 
@@ -16,8 +16,9 @@ function request(method, path, body) {
       method,
       headers: payload ? {
         'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(payload)
-      } : {}
+        'Content-Length': Buffer.byteLength(payload),
+        ...headers
+      } : headers
     }, (res) => {
       let data = ''
 
@@ -73,4 +74,40 @@ test('invalid password should return 401', async () => {
 
   assert.equal(response.status, 401)
   assert.equal(response.body.code, 401)
+})
+
+test('protected API should reject requests without token', async () => {
+  const response = await request('GET', '/profile')
+
+  assert.equal(response.status, 401)
+  assert.equal(response.body.code, 401)
+})
+
+test('logout should invalidate token', async () => {
+  const loginResponse = await request('POST', '/permission/getMenu', {
+    username: 'admin',
+    password: 'admin'
+  })
+
+  const token = loginResponse.body.data.token
+
+  const logoutResponse = await request(
+    'POST',
+    '/permission/logout',
+    null,
+    { Authorization: `Bearer ${token}` }
+  )
+
+  assert.equal(logoutResponse.status, 200)
+  assert.equal(logoutResponse.body.code, 200)
+
+  const profileResponse = await request(
+    'GET',
+    '/profile',
+    null,
+    { Authorization: `Bearer ${token}` }
+  )
+
+  assert.equal(profileResponse.status, 401)
+  assert.equal(profileResponse.body.code, 401)
 })

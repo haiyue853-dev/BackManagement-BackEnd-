@@ -11,6 +11,11 @@ class PermissionController {
 
     ctx.success(result.data, '登录成功')
   }
+
+  async logout(ctx) {
+    await permissionService.logout(ctx.state.token)
+    ctx.success(null, '退出登录成功')
+  }
 }
 
 module.exports = new PermissionController()

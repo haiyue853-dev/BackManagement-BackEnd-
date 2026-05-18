@@ -9,12 +9,14 @@ const logger = require('koa-logger')
 const errorHandler = require('./middleware/errorHandler')
 const response = require('./middleware/response')
 const cors = require('./middleware/cors')
+const auth = require('./middleware/auth')
 
 const index = require('./routes/index')
 const users = require('./routes/users')
 const malls = require('./routes/malls')
 const profile = require('./routes/profile')
 const permission = require('./routes/permission')
+const home = require('./routes/home')
 
 require('./models')
 
@@ -24,6 +26,7 @@ app.use(response)
 app.use(bodyparser({
   enableTypes: ['json', 'form', 'text']
 }))
+app.use(auth)
 app.use(json())
 app.use(logger())
 app.use(require('koa-static')(__dirname + '/public'))
@@ -36,6 +39,7 @@ app.use(users.routes(), users.allowedMethods())
 app.use(malls.routes(), malls.allowedMethods())
 app.use(profile.routes(), profile.allowedMethods())
 app.use(permission.routes(), permission.allowedMethods())
+app.use(home.routes(), home.allowedMethods())
 
 app.on('error', (err, ctx) => {
   console.error('server error', err)
