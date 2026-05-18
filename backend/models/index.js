@@ -1,4 +1,5 @@
 const sequelize = require('../config/db')
+const Account = require('./account')
 const User = require('./user')
 const Mall = require('./mall')
 const Profile = require('./profile')
@@ -13,6 +14,7 @@ sequelize.sync({ alter: true })
 
 module.exports = {
   sequelize,
+  Account,
   User,
   Mall,
   Profile

@@ -5,12 +5,13 @@ const app = require('../app')
 
 let server
 let authHeaders = {}
+const PORT = 3022
 
 function request(path, headers = {}) {
   return new Promise((resolve, reject) => {
     const req = http.request({
       hostname: '127.0.0.1',
-      port: 3021,
+      port: PORT,
       path,
       method: 'GET',
       headers
@@ -35,7 +36,9 @@ function request(path, headers = {}) {
 }
 
 test.before(async () => {
-  server = app.listen(3021)
+  server = await new Promise((resolve) => {
+    const instance = app.listen(PORT, () => resolve(instance))
+  })
 
   const loginResponse = await new Promise((resolve, reject) => {
     const payload = JSON.stringify({
@@ -45,7 +48,7 @@ test.before(async () => {
 
     const req = http.request({
       hostname: '127.0.0.1',
-      port: 3021,
+      port: PORT,
       path: '/permission/getMenu',
       method: 'POST',
       headers: {

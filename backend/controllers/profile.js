@@ -3,7 +3,7 @@ const { validateProfilePayload } = require('../utils/profileValidation')
 
 class ProfileController {
   async getCurrent(ctx) {
-    const profile = await profileService.getCurrent()
+    const profile = await profileService.getCurrent(ctx.state.user.username)
     ctx.success(profile)
   }
 
@@ -15,7 +15,7 @@ class ProfileController {
       return
     }
 
-    const profile = await profileService.update(validation.data)
+    const profile = await profileService.update(ctx.state.user.username, validation.data)
     ctx.success(profile, '个人信息保存成功')
   }
 }

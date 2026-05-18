@@ -1,5 +1,6 @@
 const profileService = require('./profile')
 const authService = require('./auth')
+const accountService = require('./account')
 
 const adminMenuList = [
   {
@@ -78,51 +79,46 @@ const editorMenuList = [
 ]
 
 class PermissionService {
+  getMenuListByRole(role = 'editor') {
+    return role === 'admin' ? adminMenuList : editorMenuList
+  }
+
   async getMenu(payload = {}) {
     const { username, password } = payload
+    const authResult = await accountService.authenticate(username, password)
 
-    if (username === 'admin' && password === 'admin') {
-      const profile = await profileService.getCurrent()
-
+    if (!authResult) {
       return {
-        success: true,
-        data: {
-          menuList: adminMenuList,
-          token: authService.issueToken({ username: 'admin' }),
-          userInfo: {
-            username: 'admin',
-            role: profile.role,
-            avatar: profile.avatar,
-            signature: profile.signature,
-            lastLoginTime: profile.lastLoginTime,
-            lastLoginCity: profile.lastLoginCity
-          }
-        }
+        success: false,
+        code: 401,
+        message: '用户名或密码错误'
       }
     }
 
-    if (username === 'xiaoxiao' && password === 'xiaoxiao') {
-      return {
-        success: true,
-        data: {
-          menuList: editorMenuList,
-          token: authService.issueToken({ username: 'xiaoxiao' }),
-          userInfo: {
-            username: 'xiaoxiao',
-            role: '运营专员',
-            avatar: 'user-default',
-            signature: '持续迭代，交付稳定体验。',
-            lastLoginTime: '2026-04-25 20:16:00',
-            lastLoginCity: '广州'
-          }
-        }
-      }
+    if (!authResult.success) {
+      return authResult
     }
+
+    const account = authResult.data
+    const profile = await profileService.getCurrent(account.username)
 
     return {
-      success: false,
-      code: 401,
-      message: '用户名或密码错误'
+      success: true,
+      data: {
+        menuList: this.getMenuListByRole(account.role),
+        token: authService.issueToken({
+          username: account.username,
+          role: account.role
+        }),
+        userInfo: {
+          username: account.username,
+          role: profile.role,
+          avatar: profile.avatar,
+          signature: profile.signature,
+          lastLoginTime: profile.lastLoginTime,
+          lastLoginCity: profile.lastLoginCity
+        }
+      }
     }
   }
 

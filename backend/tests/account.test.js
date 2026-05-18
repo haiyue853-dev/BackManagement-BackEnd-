@@ -1,0 +1,249 @@
+const test = require('node:test')
+const assert = require('node:assert/strict')
+const http = require('http')
+const app = require('../app')
+const { Account, Profile } = require('../models')
+
+let server
+const PORT = 3021
+
+function request(method, path, body, headers = {}) {
+  return new Promise((resolve, reject) => {
+    const payload = body ? JSON.stringify(body) : null
+
+    const req = http.request({
+      hostname: '127.0.0.1',
+      port: PORT,
+      path,
+      method,
+      headers: payload ? {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(payload),
+        ...headers
+      } : headers
+    }, (res) => {
+      let data = ''
+
+      res.on('data', (chunk) => {
+        data += chunk
+      })
+
+      res.on('end', () => {
+        resolve({
+          status: res.statusCode,
+          body: JSON.parse(data)
+        })
+      })
+    })
+
+    req.on('error', reject)
+
+    if (payload) {
+      req.write(payload)
+    }
+
+    req.end()
+  })
+}
+
+async function login(username, password) {
+  const response = await request('POST', '/permission/getMenu', {
+    username,
+    password
+  })
+
+  return response.body.data.token
+}
+
+async function cleanupTestAccount() {
+  await Profile.destroy({
+    where: { username: 'testeditor' }
+  })
+
+  await Account.destroy({
+    where: { username: 'testeditor' }
+  })
+}
+
+test.before(async () => {
+  await cleanupTestAccount()
+  server = await new Promise((resolve) => {
+    const instance = app.listen(PORT, () => resolve(instance))
+  })
+})
+
+test.after(async () => {
+  await new Promise((resolve) => server.close(resolve))
+  await cleanupTestAccount()
+})
+
+test('editor should not be allowed to access account list', async () => {
+  const token = await login('xiaoxiao', 'xiaoxiao')
+
+  const response = await request(
+    'GET',
+    '/accounts',
+    null,
+    { Authorization: `Bearer ${token}` }
+  )
+
+  assert.equal(response.status, 403)
+  assert.equal(response.body.code, 403)
+})
+
+test('admin should list accounts without exposing passwordHash', async () => {
+  const token = await login('admin', 'admin')
+
+  const response = await request(
+    'GET',
+    '/accounts?page=1&pageSize=10&username=',
+    null,
+    { Authorization: `Bearer ${token}` }
+  )
+
+  assert.equal(response.status, 200)
+  assert.equal(response.body.code, 200)
+  assert.ok(Array.isArray(response.body.data.list))
+  assert.ok(response.body.data.list.length >= 3)
+  assert.equal(response.body.data.list.some((item) => 'passwordHash' in item), false)
+})
+
+test('admin should create account and the new account should be able to log in', async () => {
+  const token = await login('admin', 'admin')
+
+  const createResponse = await request(
+    'POST',
+    '/accounts',
+    {
+      username: 'testeditor',
+      password: 'testeditor',
+      role: 'editor',
+      status: 'active'
+    },
+    { Authorization: `Bearer ${token}` }
+  )
+
+  assert.equal(createResponse.status, 200)
+  assert.equal(createResponse.body.code, 200)
+  assert.equal(createResponse.body.data.username, 'testeditor')
+
+  const loginResponse = await request('POST', '/permission/getMenu', {
+    username: 'testeditor',
+    password: 'testeditor'
+  })
+
+  assert.equal(loginResponse.status, 200)
+  assert.equal(loginResponse.body.code, 200)
+  assert.equal(loginResponse.body.data.userInfo.username, 'testeditor')
+
+  const profileToken = loginResponse.body.data.token
+  const profileResponse = await request(
+    'GET',
+    '/profile',
+    null,
+    { Authorization: `Bearer ${profileToken}` }
+  )
+
+  assert.equal(profileResponse.status, 200)
+  assert.equal(profileResponse.body.code, 200)
+  assert.equal(profileResponse.body.data.username, 'testeditor')
+})
+
+test('admin should disable account and disabled account should not be able to log in', async () => {
+  const token = await login('admin', 'admin')
+
+  const listResponse = await request(
+    'GET',
+    '/accounts?page=1&pageSize=20&username=testeditor',
+    null,
+    { Authorization: `Bearer ${token}` }
+  )
+
+  const target = listResponse.body.data.list.find((item) => item.username === 'testeditor')
+
+  const updateResponse = await request(
+    'PUT',
+    `/accounts/${target.id}`,
+    {
+      role: 'editor',
+      status: 'disabled'
+    },
+    { Authorization: `Bearer ${token}` }
+  )
+
+  assert.equal(updateResponse.status, 200)
+  assert.equal(updateResponse.body.code, 200)
+  assert.equal(updateResponse.body.data.status, 'disabled')
+
+  const loginResponse = await request('POST', '/permission/getMenu', {
+    username: 'testeditor',
+    password: 'testeditor'
+  })
+
+  assert.equal(loginResponse.status, 403)
+  assert.equal(loginResponse.body.code, 403)
+})
+
+test('admin should reset account password and delete account', async () => {
+  const token = await login('admin', 'admin')
+
+  const listResponse = await request(
+    'GET',
+    '/accounts?page=1&pageSize=20&username=testeditor',
+    null,
+    { Authorization: `Bearer ${token}` }
+  )
+
+  const target = listResponse.body.data.list.find((item) => item.username === 'testeditor')
+
+  const passwordResponse = await request(
+    'PUT',
+    `/accounts/${target.id}/password`,
+    {
+      password: 'newpassword'
+    },
+    { Authorization: `Bearer ${token}` }
+  )
+
+  assert.equal(passwordResponse.status, 200)
+  assert.equal(passwordResponse.body.code, 200)
+
+  const oldLoginResponse = await request('POST', '/permission/getMenu', {
+    username: 'testeditor',
+    password: 'testeditor'
+  })
+
+  assert.equal(oldLoginResponse.status, 403)
+  assert.equal(oldLoginResponse.body.code, 403)
+
+  const activeResponse = await request(
+    'PUT',
+    `/accounts/${target.id}`,
+    {
+      role: 'editor',
+      status: 'active'
+    },
+    { Authorization: `Bearer ${token}` }
+  )
+
+  assert.equal(activeResponse.status, 200)
+  assert.equal(activeResponse.body.code, 200)
+
+  const newLoginResponse = await request('POST', '/permission/getMenu', {
+    username: 'testeditor',
+    password: 'newpassword'
+  })
+
+  assert.equal(newLoginResponse.status, 200)
+  assert.equal(newLoginResponse.body.code, 200)
+
+  const deleteResponse = await request(
+    'DELETE',
+    `/accounts/${target.id}`,
+    null,
+    { Authorization: `Bearer ${token}` }
+  )
+
+  assert.equal(deleteResponse.status, 200)
+  assert.equal(deleteResponse.body.code, 200)
+})

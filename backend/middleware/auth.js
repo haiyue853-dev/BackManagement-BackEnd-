@@ -1,6 +1,6 @@
 const authService = require('../services/auth')
 
-const protectedPrefixes = ['/users', '/malls', '/profile', '/home', '/permission/logout']
+const protectedPrefixes = ['/users', '/malls', '/accounts', '/profile', '/home', '/permission/logout']
 const publicPaths = ['/permission/getMenu']
 
 module.exports = async (ctx, next) => {

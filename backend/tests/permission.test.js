@@ -4,6 +4,7 @@ const http = require('http')
 const app = require('../app')
 
 let server
+const PORT = 3020
 
 function request(method, path, body, headers = {}) {
   return new Promise((resolve, reject) => {
@@ -11,7 +12,7 @@ function request(method, path, body, headers = {}) {
 
     const req = http.request({
       hostname: '127.0.0.1',
-      port: 3020,
+      port: PORT,
       path,
       method,
       headers: payload ? {
@@ -45,7 +46,9 @@ function request(method, path, body, headers = {}) {
 }
 
 test.before(async () => {
-  server = app.listen(3020)
+  server = await new Promise((resolve) => {
+    const instance = app.listen(PORT, () => resolve(instance))
+  })
 })
 
 test.after(async () => {
@@ -110,4 +113,41 @@ test('logout should invalidate token', async () => {
 
   assert.equal(profileResponse.status, 401)
   assert.equal(profileResponse.body.code, 401)
+})
+
+test('xiaoxiao login should read its own profile data', async () => {
+  const loginResponse = await request('POST', '/permission/getMenu', {
+    username: 'xiaoxiao',
+    password: 'xiaoxiao'
+  })
+
+  assert.equal(loginResponse.status, 200)
+  assert.equal(loginResponse.body.data.userInfo.username, 'xiaoxiao')
+
+  const token = loginResponse.body.data.token
+  const profileResponse = await request(
+    'GET',
+    '/profile',
+    null,
+    { Authorization: `Bearer ${token}` }
+  )
+
+  assert.equal(profileResponse.status, 200)
+  assert.equal(profileResponse.body.code, 200)
+  assert.equal(profileResponse.body.data.username, 'xiaoxiao')
+  assert.equal(profileResponse.body.data.role, '运营专员')
+})
+
+test('chenchen database account should be able to log in', async () => {
+  const loginResponse = await request('POST', '/permission/getMenu', {
+    username: 'chenchen',
+    password: 'chenchen'
+  })
+
+  assert.equal(loginResponse.status, 200)
+  assert.equal(loginResponse.body.code, 200)
+  assert.equal(loginResponse.body.data.userInfo.username, 'chenchen')
+  assert.equal(loginResponse.body.data.userInfo.role, '内容运营')
+  assert.ok(Array.isArray(loginResponse.body.data.menuList))
+  assert.ok(loginResponse.body.data.menuList.length > 0)
 })
