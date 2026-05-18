@@ -1,4 +1,5 @@
 const userService = require('../services/user')
+const { validateUserPayload } = require('../utils/userValidation')
 
 class UserController {
   async list(ctx) {
@@ -27,36 +28,19 @@ class UserController {
   }
 
   async create(ctx) {
-    const { name, age, sex, birth, addr } = ctx.request.body
-    if (!name) {
-      ctx.error('name不能为空', 400)
+    const validation = validateUserPayload(ctx.request.body)
+    if (!validation.valid) {
+      ctx.error(validation.message, validation.code)
       return
     }
 
-    if (!age) {
-      ctx.error('age不能为空', 400)
-      return
-    }
-
-    if (isNaN(Number(age))) {
-      ctx.error('age必须是数字', 400)
-      return
-    }
-
-    const user = await userService.create({
-      name,
-      age: Number(age),
-      sex,
-      birth,
-      addr
-    })
+    const user = await userService.create(validation.data)
 
     ctx.success(user, '创建成功')
 
   }
   async update(ctx) {
     const { id } = ctx.params
-    const { name, age, sex, birth, addr } = ctx.request.body
 
     const user = await userService.getById(id)
 
@@ -65,28 +49,13 @@ class UserController {
       return
     }
 
-    if (!name) {
-      ctx.error('name不能为空', 400)
+    const validation = validateUserPayload(ctx.request.body)
+    if (!validation.valid) {
+      ctx.error(validation.message, validation.code)
       return
     }
 
-    if (!age) {
-      ctx.error('age不能为空', 400)
-      return
-    }
-
-    if (isNaN(Number(age))) {
-      ctx.error('age必须是数字', 400)
-      return
-    }
-
-    await userService.update(user, {
-      name,
-      age: Number(age),
-      sex,
-      birth,
-      addr
-    })
+    await userService.update(user, validation.data)
 
     ctx.success(user, '更新成功')
   }

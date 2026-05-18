@@ -1,5 +1,6 @@
 const sequelize = require('../config/db')
 const User = require('./user')
+const Mall = require('./mall')
 
 sequelize.sync({ alter: true })
   .then(() => {
@@ -11,5 +12,6 @@ sequelize.sync({ alter: true })
 
 module.exports = {
   sequelize,
-  User
+  User,
+  Mall
 }
