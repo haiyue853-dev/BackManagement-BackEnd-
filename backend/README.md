@@ -44,6 +44,10 @@ Authorization: Bearer <token>
 
 - `backend/docs/API接口说明.md`
 
+健康检查接口：
+
+- `GET /health`
+
 ## 6. 当前能力
 
 - JWT 鉴权

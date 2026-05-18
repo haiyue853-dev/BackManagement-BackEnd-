@@ -59,6 +59,34 @@ Authorization: Bearer <token>
 }
 ```
 
+## 3.1 基础运行接口
+
+### 服务根信息
+
+- 方法：`GET /`
+
+### 健康检查
+
+- 方法：`GET /health`
+- 说明：用于部署检查、Nginx/网关探活、云主机健康探针
+
+响应示例：
+
+```json
+{
+  "code": 200,
+  "message": "健康检查通过",
+  "data": {
+    "service": "backend",
+    "version": "0.1.0",
+    "status": "ok",
+    "database": "connected",
+    "timestamp": "2026-05-18T13:00:00.000Z"
+  },
+  "requestId": "..."
+}
+```
+
 ## 4. 用户管理接口
 
 ### 4.1 查询用户列表
