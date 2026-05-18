@@ -66,6 +66,7 @@ async function cleanupTestMalls() {
 
 test.before(async () => {
   await cleanupTestMalls()
+  await app.ready
   server = await new Promise((resolve) => {
     const instance = app.listen(0, () => {
       port = instance.address().port

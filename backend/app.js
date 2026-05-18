@@ -10,6 +10,7 @@ const errorHandler = require('./middleware/errorHandler')
 const response = require('./middleware/response')
 const cors = require('./middleware/cors')
 const auth = require('./middleware/auth')
+const modelStore = require('./models')
 
 const index = require('./routes/index')
 const users = require('./routes/users')
@@ -19,10 +20,10 @@ const profile = require('./routes/profile')
 const permission = require('./routes/permission')
 const home = require('./routes/home')
 
-require('./models')
-
 const app = new Koa()
 onerror(app)
+
+app.ready = modelStore.ready
 
 app.use(errorHandler)
 app.use(cors)

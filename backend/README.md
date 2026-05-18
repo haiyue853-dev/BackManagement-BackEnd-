@@ -12,6 +12,8 @@
 - `PORT`
 - `JWT_SECRET`
 - `JWT_EXPIRES_IN`
+- `DB_SYNC_ENABLED`
+- `DB_SYNC_ALTER`
 - `DB_HOST`
 - `DB_PORT`
 - `DB_NAME`
@@ -49,3 +51,19 @@ Authorization: Bearer <token>
 - 用户、商品、账号模块 CRUD
 - 统一分页参数与列表响应
 - 基础审计日志与错误响应
+
+## 7. 数据库同步策略
+
+- 默认启用安全同步：`DB_SYNC_ENABLED=true`
+- 默认不执行危险的自动结构修改：`DB_SYNC_ALTER=false`
+- 只有在明确需要调整表结构时，才临时改成 `DB_SYNC_ALTER=true`
+
+## 8. 重复索引修复
+
+如果你之前已经运行过很多次 `alter` 同步，`accounts.username` 可能积累了大量重复唯一索引。
+
+可以执行下面的命令修复：
+
+```bash
+npm run db:repair:accounts
+```

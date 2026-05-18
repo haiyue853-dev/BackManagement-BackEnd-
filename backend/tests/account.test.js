@@ -67,6 +67,7 @@ async function cleanupTestAccount() {
 
 test.before(async () => {
   await cleanupTestAccount()
+  await app.ready
   server = await new Promise((resolve) => {
     const instance = app.listen(PORT, () => resolve(instance))
   })

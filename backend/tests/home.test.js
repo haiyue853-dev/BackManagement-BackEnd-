@@ -36,6 +36,7 @@ function request(path, headers = {}) {
 }
 
 test.before(async () => {
+  await app.ready
   server = await new Promise((resolve) => {
     const instance = app.listen(PORT, () => resolve(instance))
   })

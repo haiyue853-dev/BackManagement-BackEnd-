@@ -6,7 +6,8 @@
     "start": "node bin/www",
     "dev": "nodemon bin/www",
     "prd": "pm2 start bin/www",
-    "test": "node --test tests/env.test.js tests/account.test.js tests/permission.test.js tests/home.test.js tests/user.test.js tests/mall.test.js"
+    "test": "node --test tests/env.test.js tests/modelBootstrap.test.js tests/accountIndexCleanup.test.js tests/account.test.js tests/permission.test.js tests/home.test.js tests/user.test.js tests/mall.test.js",
+    "db:repair:accounts": "node scripts/repairAccountIndexes.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
