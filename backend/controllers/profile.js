@@ -16,7 +16,7 @@ class ProfileController {
     }
 
     const profile = await profileService.update(ctx.state.user.username, validation.data)
-    ctx.success(profile, '个人信息保存成功')
+    ctx.success(profile, '个人资料更新成功')
   }
 }
 

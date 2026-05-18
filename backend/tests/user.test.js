@@ -6,7 +6,7 @@ const { User } = require('../models')
 
 let server
 let port
-const TEST_USER_NAME = '治理测试用户'
+const TEST_USER_NAME = '联调测试用户'
 
 function request(method, path, body, headers = {}) {
   return new Promise((resolve, reject) => {

@@ -33,7 +33,7 @@ class PermissionController {
       username: ctx.state.user?.username || ''
     })
 
-    ctx.success(null, '退出成功')
+    ctx.success(null, '退出登录成功')
   }
 }
 

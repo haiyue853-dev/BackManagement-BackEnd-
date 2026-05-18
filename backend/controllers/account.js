@@ -55,7 +55,7 @@ class AccountController {
       result: 'success'
     })
 
-    ctx.success(accountService.formatAccount(account), '账号创建成功')
+    ctx.success(accountService.formatAccount(account), '新增账号成功')
   }
 
   async update(ctx) {
@@ -97,9 +97,9 @@ class AccountController {
         action: 'update',
         targetId: account.id,
         result: 'failed',
-        detail: '默认管理员账号不能被禁用或降级'
+        detail: '默认管理员账号不能降级或停用'
       })
-      ctx.error('默认管理员账号不能被禁用或降级', 400)
+      ctx.error('默认管理员账号不能降级或停用', 400)
       return
     }
 
@@ -112,7 +112,7 @@ class AccountController {
       result: 'success'
     })
 
-    ctx.success(accountService.formatAccount(account), '账号更新成功')
+    ctx.success(accountService.formatAccount(account), '编辑账号成功')
   }
 
   async updatePassword(ctx) {
@@ -154,7 +154,7 @@ class AccountController {
       result: 'success'
     })
 
-    ctx.success(null, '密码重置成功')
+    ctx.success(null, '重置密码成功')
   }
 
   async remove(ctx) {
@@ -195,7 +195,7 @@ class AccountController {
       result: 'success'
     })
 
-    ctx.success(null, '账号删除成功')
+    ctx.success(null, '删除账号成功')
   }
 }
 

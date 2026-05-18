@@ -62,7 +62,7 @@ class MallController {
       result: 'success'
     })
 
-    ctx.success(formatMall(mall), '商品创建成功')
+    ctx.success(formatMall(mall), '新增商品成功')
   }
 
   async update(ctx) {
@@ -104,7 +104,7 @@ class MallController {
       result: 'success'
     })
 
-    ctx.success(formatMall(mall), '商品更新成功')
+    ctx.success(formatMall(mall), '编辑商品成功')
   }
 
   async remove(ctx) {
@@ -132,7 +132,7 @@ class MallController {
       result: 'success'
     })
 
-    ctx.success(null, '商品删除成功')
+    ctx.success(null, '删除商品成功')
   }
 }
 

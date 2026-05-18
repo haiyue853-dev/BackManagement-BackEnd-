@@ -30,7 +30,7 @@ function validateProfilePayload(payload = {}) {
   }
 
   if (!normalized.avatar) {
-    return { valid: false, code: 400, message: '头像标识不能为空' }
+    return { valid: false, code: 400, message: '头像不能为空' }
   }
 
   return {

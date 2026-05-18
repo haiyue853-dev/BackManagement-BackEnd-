@@ -90,7 +90,7 @@ test('editor should not be allowed to access account list', async () => {
 
   assert.equal(response.status, 403)
   assert.equal(response.body.code, 403)
-  assert.equal(response.body.message, '仅管理员可访问')
+  assert.equal(response.body.message, '当前账号没有管理员权限')
   assert.ok(response.body.requestId)
 })
 
@@ -194,7 +194,7 @@ test('admin should disable account and disabled account should not be able to lo
 
   assert.equal(loginResponse.status, 403)
   assert.equal(loginResponse.body.code, 403)
-  assert.equal(loginResponse.body.message, '账号已被禁用')
+  assert.equal(loginResponse.body.message, '账号已被停用')
 })
 
 test('admin should reset account password and delete account', async () => {
@@ -277,5 +277,5 @@ test('default admin account should not be disabled or downgraded', async () => {
 
   assert.equal(updateResponse.status, 400)
   assert.equal(updateResponse.body.code, 400)
-  assert.equal(updateResponse.body.message, '默认管理员账号不能被禁用或降级')
+  assert.equal(updateResponse.body.message, '默认管理员账号不能降级或停用')
 })

@@ -6,7 +6,7 @@ function normalizeUserPayload(payload = {}) {
     age,
     sex: sex === '' || typeof sex === 'undefined' ? null : Number(sex),
     birth: birth || null,
-    addr: typeof addr === 'string' ? addr.trim() : addr || null,
+    addr: typeof addr === 'string' ? addr.trim() : addr || null
   }
 }
 
@@ -28,15 +28,15 @@ function validateUserPayload(payload = {}) {
   normalized.age = Number(normalized.age)
 
   if (normalized.sex !== null && ![0, 1].includes(normalized.sex)) {
-    return { valid: false, code: 400, message: '性别只能是 0 或 1' }
+    return { valid: false, code: 400, message: '性别只能为 0 或 1' }
   }
 
   return {
     valid: true,
-    data: normalized,
+    data: normalized
   }
 }
 
 module.exports = {
-  validateUserPayload,
+  validateUserPayload
 }

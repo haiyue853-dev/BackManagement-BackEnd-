@@ -1,16 +1,16 @@
-# 后端接口说明
+# 后台管理系统接口说明
 
-## 1. 鉴权方式
+## 1. 鉴权说明
 
 - 登录接口：`POST /permission/getMenu`
-- 除登录接口外，`/users`、`/malls`、`/accounts`、`/profile`、`/home` 相关接口都需要携带 JWT
+- 除登录接口外，`/users`、`/malls`、`/accounts`、`/profile`、`/home`、`/permission/logout` 都需要携带 JWT
 - 请求头格式：
 
 ```http
 Authorization: Bearer <token>
 ```
 
-## 2. 通用响应结构
+## 2. 统一响应格式
 
 成功响应：
 
@@ -28,27 +28,27 @@ Authorization: Bearer <token>
 ```json
 {
   "code": 400,
-  "message": "参数错误说明",
+  "message": "参数错误",
   "data": null,
   "requestId": "9b9b5c2d-xxxx"
 }
 ```
 
-## 3. 统一列表查询规则
+## 3. 分页查询约定
 
-三个列表接口统一支持以下参数：
+列表接口统一支持以下参数：
 
 - `page`：页码，默认 `1`
-- `pageSize`：每页条数，默认 `10`
-- `keyword`：统一搜索关键字，默认空字符串
+- `pageSize`：每页条数，默认 `10`，最大 `100`
+- `keyword`：关键字搜索
 
-兼容旧参数：
+兼容别名：
 
-- `GET /users` 仍兼容 `name`
-- `GET /malls` 仍兼容 `name`
-- `GET /accounts` 仍兼容 `username`
+- `GET /users` 兼容 `name`
+- `GET /malls` 兼容 `name`
+- `GET /accounts` 兼容 `username`
 
-统一列表返回：
+统一分页响应：
 
 ```json
 {
@@ -59,23 +59,22 @@ Authorization: Bearer <token>
 }
 ```
 
-## 3.1 基础运行接口
+## 4. 健康检查
 
-### 服务根信息
+### 根接口
 
-- 方法：`GET /`
+- `GET /`
 
-### 健康检查
+### 健康检查接口
 
-- 方法：`GET /health`
-- 说明：用于部署检查、Nginx/网关探活、云主机健康探针
+- `GET /health`
 
-响应示例：
+示例响应：
 
 ```json
 {
   "code": 200,
-  "message": "健康检查通过",
+  "message": "服务运行正常",
   "data": {
     "service": "backend",
     "version": "0.1.0",
@@ -87,15 +86,12 @@ Authorization: Bearer <token>
 }
 ```
 
-## 4. 用户管理接口
+## 5. 用户管理
 
-### 4.1 查询用户列表
+### 查询用户列表
 
-- 方法：`GET /users`
-- 参数：
-  - `page`
-  - `pageSize`
-  - `keyword`
+- `GET /users`
+- 参数：`page`、`pageSize`、`keyword`
 
 示例：
 
@@ -103,11 +99,11 @@ Authorization: Bearer <token>
 GET /users?page=1&pageSize=10&keyword=张
 ```
 
-### 4.2 新增用户
+### 新增用户
 
-- 方法：`POST /users`
+- `POST /users`
 
-请求体示例：
+请求体：
 
 ```json
 {
@@ -119,29 +115,26 @@ GET /users?page=1&pageSize=10&keyword=张
 }
 ```
 
-### 4.3 修改用户
+### 编辑用户
 
-- 方法：`PUT /users/:id`
+- `PUT /users/:id`
 
-### 4.4 删除用户
+### 删除用户
 
-- 方法：`DELETE /users/:id`
+- `DELETE /users/:id`
 
-## 5. 商品管理接口
+## 6. 商品管理
 
-### 5.1 查询商品列表
+### 查询商品列表
 
-- 方法：`GET /malls`
-- 参数：
-  - `page`
-  - `pageSize`
-  - `keyword`
+- `GET /malls`
+- 参数：`page`、`pageSize`、`keyword`
 
-### 5.2 新增商品
+### 新增商品
 
-- 方法：`POST /malls`
+- `POST /malls`
 
-请求体示例：
+请求体：
 
 ```json
 {
@@ -151,35 +144,30 @@ GET /users?page=1&pageSize=10&keyword=张
   "stock": 80,
   "status": "上架",
   "coverTag": "new",
-  "desc": "主动降噪"
+  "desc": "热销商品"
 }
 ```
 
-### 5.3 修改商品
+### 编辑商品
 
-- 方法：`PUT /malls/:id`
+- `PUT /malls/:id`
 
-### 5.4 删除商品
+### 删除商品
 
-- 方法：`DELETE /malls/:id`
+- `DELETE /malls/:id`
 
-## 6. 账号管理接口
+## 7. 账号管理
 
-### 6.1 查询账号列表
+### 查询账号列表
 
-- 方法：`GET /accounts`
-- 权限：仅管理员
-- 参数：
-  - `page`
-  - `pageSize`
-  - `keyword`
+- `GET /accounts`
+- 参数：`page`、`pageSize`、`keyword`
 
-### 6.2 新增账号
+### 新增账号
 
-- 方法：`POST /accounts`
-- 权限：仅管理员
+- `POST /accounts`
 
-请求体示例：
+请求体：
 
 ```json
 {
@@ -190,15 +178,15 @@ GET /users?page=1&pageSize=10&keyword=张
 }
 ```
 
-### 6.3 修改账号状态和角色
+### 编辑账号角色和状态
 
-- 方法：`PUT /accounts/:id`
+- `PUT /accounts/:id`
 
-### 6.4 重置账号密码
+### 重置账号密码
 
-- 方法：`PUT /accounts/:id/password`
+- `PUT /accounts/:id/password`
 
-请求体示例：
+请求体：
 
 ```json
 {
@@ -206,15 +194,52 @@ GET /users?page=1&pageSize=10&keyword=张
 }
 ```
 
-### 6.5 删除账号
+### 删除账号
 
-- 方法：`DELETE /accounts/:id`
+- `DELETE /accounts/:id`
 
-## 7. 常见错误码
+## 8. 个人中心
 
-- `400`：参数错误、格式错误、业务前置条件不满足
-- `401`：未登录或登录已过期
-- `403`：无权限访问，或账号被禁用
+### 获取当前资料
+
+- `GET /profile`
+
+### 更新个人资料
+
+- `PUT /profile`
+
+请求体：
+
+```json
+{
+  "username": "admin",
+  "role": "超级管理员",
+  "avatar": "user",
+  "signature": "欢迎使用后台管理系统",
+  "lastLoginTime": "2026-05-18 10:00:00",
+  "lastLoginCity": "上海"
+}
+```
+
+## 9. 首页数据
+
+### 表格数据
+
+- `GET /home/getTableData`
+
+### 卡片统计
+
+- `GET /home/getCountData`
+
+### 图表数据
+
+- `GET /home/getChartData`
+
+## 10. 常见状态码
+
+- `400`：请求参数错误
+- `401`：未登录或登录已失效
+- `403`：无权限访问
 - `404`：资源不存在
 - `409`：资源冲突，例如账号已存在
-- `500`：服务器内部异常
+- `500`：服务器内部错误

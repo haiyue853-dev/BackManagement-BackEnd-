@@ -6,7 +6,7 @@ const { Mall } = require('../models')
 
 let server
 let port
-const TEST_MALL_NAME = '治理测试商品'
+const TEST_MALL_NAME = '联调测试商品'
 
 function request(method, path, body, headers = {}) {
   return new Promise((resolve, reject) => {
@@ -93,7 +93,7 @@ test('mall list should support keyword and unified pagination fields', async () 
       stock: 12,
       status: '上架',
       coverTag: 'new',
-      desc: '治理层测试商品'
+      desc: '联调测试商品描述'
     },
     { Authorization: `Bearer ${token}` }
   )

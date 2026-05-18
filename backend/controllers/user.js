@@ -49,7 +49,7 @@ class UserController {
       result: 'success'
     })
 
-    ctx.success(user, '用户创建成功')
+    ctx.success(user, '新增用户成功')
   }
 
   async update(ctx) {
@@ -91,7 +91,7 @@ class UserController {
       result: 'success'
     })
 
-    ctx.success(user, '用户更新成功')
+    ctx.success(user, '编辑用户成功')
   }
 
   async remove(ctx) {
@@ -119,7 +119,7 @@ class UserController {
       result: 'success'
     })
 
-    ctx.success(null, '用户删除成功')
+    ctx.success(null, '删除用户成功')
   }
 }
 

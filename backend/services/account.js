@@ -132,7 +132,7 @@ class AccountService {
       return {
         success: false,
         code: 403,
-        message: '账号已被禁用'
+        message: '账号已被停用'
       }
     }
 

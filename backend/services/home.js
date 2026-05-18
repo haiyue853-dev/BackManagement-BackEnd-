@@ -1,14 +1,14 @@
 const { User, Mall } = require('../models')
 
-const fallbackBrands = ['oppo', 'vivo', '苹果', '小米', '华为', '一加']
+const fallbackBrands = ['华为', '小米', '苹果', '联想', '戴尔', '索尼']
 
 const cardMeta = [
   { name: '今日支付订单', icon: 'SuccessFilled', color: '#2ec7c9' },
-  { name: '今日收藏订单', icon: 'StarFilled', color: '#ffb980' },
-  { name: '今日未支付订单', icon: 'GoodsFilled', color: '#5ab1ef' },
+  { name: '今日收藏人数', icon: 'StarFilled', color: '#ffb980' },
+  { name: '今日商品库存', icon: 'GoodsFilled', color: '#5ab1ef' },
   { name: '本月支付订单', icon: 'SuccessFilled', color: '#2ec7c9' },
-  { name: '本月收藏订单', icon: 'StarFilled', color: '#ffb980' },
-  { name: '本月未支付订单', icon: 'GoodsFilled', color: '#5ab1ef' }
+  { name: '本月收藏人数', icon: 'StarFilled', color: '#ffb980' },
+  { name: '本月商品库存', icon: 'GoodsFilled', color: '#5ab1ef' }
 ]
 
 class HomeService {
@@ -81,15 +81,7 @@ class HomeService {
   async getChartData() {
     const { userCount, brandNames, totalStock, totalValue } = await this.getBaseStats()
 
-    const date = [
-      '周一',
-      '周二',
-      '周三',
-      '周四',
-      '周五',
-      '周六',
-      '周日'
-    ]
+    const date = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
 
     const orderData = {
       date,

@@ -6,27 +6,27 @@ const DEFAULT_PROFILES = {
     username: 'admin',
     role: '超级管理员',
     avatar: 'user',
-    signature: '欢迎来到后台管理系统',
+    signature: '欢迎使用后台管理系统',
     lastLoginTime: '',
     lastLoginCity: ''
   },
   xiaoxiao: {
     id: 2,
     username: 'xiaoxiao',
-    role: '运营专员',
+    role: '内容编辑',
     avatar: 'user-default',
-    signature: '持续迭代，交付稳定体验。',
+    signature: '负责内容维护与用户资料整理',
     lastLoginTime: '2026-04-25 20:16:00',
-    lastLoginCity: '广州'
+    lastLoginCity: '上海'
   },
   chenchen: {
     id: 3,
     username: 'chenchen',
-    role: '内容运营',
+    role: '数据运营',
     avatar: 'user-default',
-    signature: '把内容体验打磨得更细一点。',
+    signature: '关注商品运营和数据趋势变化',
     lastLoginTime: '2026-04-27 11:20:00',
-    lastLoginCity: '杭州'
+    lastLoginCity: '北京'
   }
 }
 

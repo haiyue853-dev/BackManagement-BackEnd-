@@ -12,23 +12,23 @@ function validateAccountCreatePayload(payload = {}) {
   const status = normalizeText(payload.status) || 'active'
 
   if (!username) {
-    return { valid: false, code: 400, message: '用户名不能为空' }
+    return { valid: false, code: 400, message: '请输入账号' }
   }
 
   if (!password) {
-    return { valid: false, code: 400, message: '密码不能为空' }
+    return { valid: false, code: 400, message: '请输入密码' }
   }
 
   if (password.length < 5) {
-    return { valid: false, code: 400, message: '密码长度不能少于 5 位' }
+    return { valid: false, code: 400, message: '密码至少 5 位' }
   }
 
   if (!ACCOUNT_ROLES.includes(role)) {
-    return { valid: false, code: 400, message: '角色不合法' }
+    return { valid: false, code: 400, message: '角色参数不合法' }
   }
 
   if (!ACCOUNT_STATUS.includes(status)) {
-    return { valid: false, code: 400, message: '状态不合法' }
+    return { valid: false, code: 400, message: '状态参数不合法' }
   }
 
   return {
@@ -47,11 +47,11 @@ function validateAccountUpdatePayload(payload = {}) {
   const status = normalizeText(payload.status)
 
   if (!ACCOUNT_ROLES.includes(role)) {
-    return { valid: false, code: 400, message: '角色不合法' }
+    return { valid: false, code: 400, message: '角色参数不合法' }
   }
 
   if (!ACCOUNT_STATUS.includes(status)) {
-    return { valid: false, code: 400, message: '状态不合法' }
+    return { valid: false, code: 400, message: '状态参数不合法' }
   }
 
   return {
@@ -67,11 +67,11 @@ function validateAccountPasswordPayload(payload = {}) {
   const password = normalizeText(payload.password)
 
   if (!password) {
-    return { valid: false, code: 400, message: '密码不能为空' }
+    return { valid: false, code: 400, message: '请输入密码' }
   }
 
   if (password.length < 5) {
-    return { valid: false, code: 400, message: '密码长度不能少于 5 位' }
+    return { valid: false, code: 400, message: '密码至少 5 位' }
   }
 
   return {
