@@ -1,6 +1,11 @@
 const { Account } = require('../models')
 const { Op } = require('sequelize')
-const { hashPassword, verifyPassword } = require('../utils/password')
+const {
+  hashPassword,
+  hashLegacyPassword,
+  isLegacyPasswordHash,
+  verifyPassword
+} = require('../utils/password')
 
 const DEFAULT_ACCOUNTS = [
   {
@@ -30,7 +35,7 @@ class AccountService {
         where: { username: item.username },
         defaults: {
           username: item.username,
-          passwordHash: hashPassword(item.password),
+          passwordHash: await hashPassword(item.password),
           role: item.role,
           status: item.status
         }
@@ -89,7 +94,7 @@ class AccountService {
 
     return await Account.create({
       username: data.username,
-      passwordHash: hashPassword(data.password),
+      passwordHash: await hashPassword(data.password),
       role: data.role,
       status: data.status
     })
@@ -104,7 +109,7 @@ class AccountService {
 
   async updatePassword(account, password) {
     return await account.update({
-      passwordHash: hashPassword(password)
+      passwordHash: await hashPassword(password)
     })
   }
 
@@ -127,12 +132,22 @@ class AccountService {
       return {
         success: false,
         code: 403,
-        message: '账号已被禁用'
+        message: 'Account is disabled'
       }
     }
 
-    if (!verifyPassword(password, account.passwordHash)) {
-      return null
+    const matched = await verifyPassword(password, account.passwordHash)
+
+    if (!matched) {
+      if (
+        isLegacyPasswordHash(account.passwordHash) &&
+        hashLegacyPassword(password) === account.passwordHash
+      ) {
+        account.passwordHash = await hashPassword(password)
+        await account.save()
+      } else {
+        return null
+      }
     }
 
     return {

@@ -6,11 +6,13 @@
     "start": "node bin/www",
     "dev": "nodemon bin/www",
     "prd": "pm2 start bin/www",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --test tests/env.test.js tests/account.test.js tests/permission.test.js tests/home.test.js"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "debug": "^4.1.1",
     "dotenv": "^17.4.2",
+    "jsonwebtoken": "^9.0.3",
     "koa": "^2.7.0",
     "koa-bodyparser": "^4.2.1",
     "koa-convert": "^1.2.0",

@@ -1,3 +1,4 @@
+const logger = require('../utils/log4js')
 const permissionService = require('../services/permission')
 
 class PermissionController {
@@ -5,16 +6,34 @@ class PermissionController {
     const result = await permissionService.getMenu(ctx.request.body)
 
     if (!result.success) {
+      logger.warn({
+        requestId: ctx.state.requestId,
+        action: 'login_failed',
+        username: ctx.request.body?.username || ''
+      })
       ctx.error(result.message, result.code)
       return
     }
 
-    ctx.success(result.data, '登录成功')
+    logger.info({
+      requestId: ctx.state.requestId,
+      action: 'login_success',
+      username: result.data.userInfo.username
+    })
+
+    ctx.success(result.data, 'login success')
   }
 
   async logout(ctx) {
     await permissionService.logout(ctx.state.token)
-    ctx.success(null, '退出登录成功')
+
+    logger.info({
+      requestId: ctx.state.requestId,
+      action: 'logout',
+      username: ctx.state.user?.username || ''
+    })
+
+    ctx.success(null, 'logout success')
   }
 }
 

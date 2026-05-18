@@ -1,19 +1,11 @@
-const crypto = require('crypto')
+const jwt = require('jsonwebtoken')
+const env = require('../config/env')
 
 class AuthService {
-  constructor() {
-    this.tokenStore = new Map()
-  }
-
   issueToken(userInfo = {}) {
-    const token = crypto.randomUUID()
-
-    this.tokenStore.set(token, {
-      ...userInfo,
-      issuedAt: Date.now()
+    return jwt.sign(userInfo, env.jwtSecret, {
+      expiresIn: env.jwtExpiresIn
     })
-
-    return token
   }
 
   verifyToken(token) {
@@ -21,15 +13,15 @@ class AuthService {
       return null
     }
 
-    return this.tokenStore.get(token) || null
+    try {
+      return jwt.verify(token, env.jwtSecret)
+    } catch (error) {
+      return null
+    }
   }
 
-  revokeToken(token) {
-    if (!token) {
-      return false
-    }
-
-    return this.tokenStore.delete(token)
+  revokeToken() {
+    return true
   }
 }
 

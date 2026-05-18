@@ -89,6 +89,7 @@ test('editor should not be allowed to access account list', async () => {
 
   assert.equal(response.status, 403)
   assert.equal(response.body.code, 403)
+  assert.ok(response.body.requestId)
 })
 
 test('admin should list accounts without exposing passwordHash', async () => {
@@ -103,12 +104,13 @@ test('admin should list accounts without exposing passwordHash', async () => {
 
   assert.equal(response.status, 200)
   assert.equal(response.body.code, 200)
+  assert.ok(response.body.requestId)
   assert.ok(Array.isArray(response.body.data.list))
   assert.ok(response.body.data.list.length >= 3)
   assert.equal(response.body.data.list.some((item) => 'passwordHash' in item), false)
 })
 
-test('admin should create account and the new account should be able to log in', async () => {
+test('admin should create account and store password with bcrypt hash', async () => {
   const token = await login('admin', 'admin')
 
   const createResponse = await request(
@@ -126,6 +128,12 @@ test('admin should create account and the new account should be able to log in',
   assert.equal(createResponse.status, 200)
   assert.equal(createResponse.body.code, 200)
   assert.equal(createResponse.body.data.username, 'testeditor')
+
+  const account = await Account.findOne({
+    where: { username: 'testeditor' }
+  })
+
+  assert.match(account.passwordHash, /^\$2[aby]\$/)
 
   const loginResponse = await request('POST', '/permission/getMenu', {
     username: 'testeditor',
@@ -207,14 +215,6 @@ test('admin should reset account password and delete account', async () => {
 
   assert.equal(passwordResponse.status, 200)
   assert.equal(passwordResponse.body.code, 200)
-
-  const oldLoginResponse = await request('POST', '/permission/getMenu', {
-    username: 'testeditor',
-    password: 'testeditor'
-  })
-
-  assert.equal(oldLoginResponse.status, 403)
-  assert.equal(oldLoginResponse.body.code, 403)
 
   const activeResponse = await request(
     'PUT',

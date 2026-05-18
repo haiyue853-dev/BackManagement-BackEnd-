@@ -1,9 +1,14 @@
+const crypto = require('crypto')
+
 module.exports = async (ctx, next) => {
+  ctx.state.requestId = ctx.headers['x-request-id'] || crypto.randomUUID()
+
   ctx.success = (data = null, message = 'success') => {
     ctx.body = {
       code: 200,
       message,
-      data
+      data,
+      requestId: ctx.state.requestId
     }
   }
 
@@ -12,8 +17,10 @@ module.exports = async (ctx, next) => {
     ctx.body = {
       code,
       message,
-      data: null
+      data: null,
+      requestId: ctx.state.requestId
     }
   }
+
   await next()
 }

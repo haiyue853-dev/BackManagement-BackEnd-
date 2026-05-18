@@ -1,11 +1,11 @@
 const Koa = require('koa')
-const app = new Koa()
 const views = require('koa-views')
 const json = require('koa-json')
 const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
 
+const requestLogger = require('./utils/log4js')
 const errorHandler = require('./middleware/errorHandler')
 const response = require('./middleware/response')
 const cors = require('./middleware/cors')
@@ -20,6 +20,9 @@ const permission = require('./routes/permission')
 const home = require('./routes/home')
 
 require('./models')
+
+const app = new Koa()
+onerror(app)
 
 app.use(errorHandler)
 app.use(cors)
@@ -44,7 +47,11 @@ app.use(permission.routes(), permission.allowedMethods())
 app.use(home.routes(), home.allowedMethods())
 
 app.on('error', (err, ctx) => {
-  console.error('server error', err)
+  requestLogger.error({
+    requestId: ctx?.state?.requestId,
+    message: err.message,
+    stack: err.stack
+  })
 })
 
 module.exports = app

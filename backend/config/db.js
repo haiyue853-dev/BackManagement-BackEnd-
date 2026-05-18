@@ -1,8 +1,11 @@
 const Sequelize = require('sequelize')
+const env = require('./env')
 
-const sequelize = new Sequelize('dev5', 'root', '123456', {
-  host: 'localhost',
+const sequelize = new Sequelize(env.db.name, env.db.user, env.db.password, {
+  host: env.db.host,
+  port: env.db.port,
   dialect: 'mysql',
+  logging: false,
   pool: {
     max: 5,
     min: 0,
@@ -10,15 +13,5 @@ const sequelize = new Sequelize('dev5', 'root', '123456', {
     idle: 10000,
   }
 })
-
-sequelize.authenticate()
-  .then(() => {
-    console.log('【数据库连接成功】')
-  })
-  .catch((err) => {
-    console.error('【数据库连接失败】:', err.message)
-  })
-
-
 
 module.exports = sequelize
