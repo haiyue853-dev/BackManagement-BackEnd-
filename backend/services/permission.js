@@ -32,6 +32,13 @@ const adminMenuList = [
     url: 'User'
   },
   {
+    path: '/account',
+    name: 'account',
+    label: '账号管理',
+    icon: 'setting',
+    url: 'Account'
+  },
+  {
     path: 'other',
     label: '其他',
     icon: 'location',

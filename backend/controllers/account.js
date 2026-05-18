@@ -58,6 +58,14 @@ class AccountController {
       return
     }
 
+    if (
+      account.username === 'admin' &&
+      (validation.data.role !== 'admin' || validation.data.status !== 'active')
+    ) {
+      ctx.error('default admin account must stay active admin', 400)
+      return
+    }
+
     await accountService.update(account, validation.data)
 
     ctx.success(accountService.formatAccount(account), 'account updated')

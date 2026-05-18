@@ -247,3 +247,29 @@ test('admin should reset account password and delete account', async () => {
   assert.equal(deleteResponse.status, 200)
   assert.equal(deleteResponse.body.code, 200)
 })
+
+test('default admin account should not be disabled or downgraded', async () => {
+  const token = await login('admin', 'admin')
+
+  const listResponse = await request(
+    'GET',
+    '/accounts?page=1&pageSize=20&username=admin',
+    null,
+    { Authorization: `Bearer ${token}` }
+  )
+
+  const adminAccount = listResponse.body.data.list.find((item) => item.username === 'admin')
+
+  const updateResponse = await request(
+    'PUT',
+    `/accounts/${adminAccount.id}`,
+    {
+      role: 'editor',
+      status: 'disabled'
+    },
+    { Authorization: `Bearer ${token}` }
+  )
+
+  assert.equal(updateResponse.status, 400)
+  assert.equal(updateResponse.body.code, 400)
+})
